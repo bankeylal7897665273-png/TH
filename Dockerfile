@@ -1,19 +1,18 @@
-# Use lightweight Python image
-FROM python:3.10-slim
+# Lightweight Python image use kar rahe hain taki server fast load ho aur RAM kam use kare
+FROM python:3.9-slim
 
-# Set working directory
+# Server ke andar folder setup
 WORKDIR /app
 
-# Install the MTProto Proxy package
-RUN pip install --no-cache-dir mtprotoproxy
+# Files ko server me copy karna
+COPY requirements.txt .
+COPY server.py .
 
-# Expose port 10000 for hosting
-EXPOSE 10000
+# Packages ko bina cache ke install karna taki storage waste na ho
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Set Environment Variables
-# SECRET format: 'ee' + 32 random characters + hex of 'google.com' (to bypass network blocks)
-ENV PORT=10000
-ENV SECRET="ee11111111111111111111111111111111676f6f676c652e636f6d"
+# Render ke port ko open karna
+EXPOSE $PORT
 
-# Command to run the proxy
-CMD ["sh", "-c", "mtprotoproxy $PORT $SECRET"]
+# Server start karne ka command
+CMD ["python", "server.py"]
